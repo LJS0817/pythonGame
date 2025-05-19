@@ -7,7 +7,7 @@ class GameMng(Scene):
         super().__init__(self, "GameScene")
         if(imageProvider != None) :
             self.map = MapMng(32, 32, imageProvider)
-            self.hero = Hero(self.map.center())
+            self.hero = Hero(self.map.center)
         
     def Update(self, input, camera, dt):
         self.map.Update(input, camera, dt)

@@ -12,7 +12,7 @@ from Provider.ImageProvider import ImageProvider
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((600, 400))
+screen = pygame.display.set_mode((1280, 600))
 clock = pygame.time.Clock()
 running = True
 dt = 0

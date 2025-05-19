@@ -1,5 +1,6 @@
 from pygame.math import Vector2
 from Util.MapTile import MapTile
+from Provider.PathProvider import PathProvider
 import pygame
 import numpy as np
 import math
@@ -10,65 +11,105 @@ class MapMng :
         self.tile = MapTile(imgProvider)
         self.tile.resize(64)
         self.map = np.zeros((mapSizeY, mapSizeX))
+        self.mapChanged = {}
         self.offset = (self.size * 0.5)
         self.offset.x *= (self.tile.scale - self.tile.getShift() / 2)
         self.offset.y = (self.offset.y * self.tile.getSizeWithoutPadding()) + (self.tile.getSizeWithoutPadding() / 2)
+        self.center = Vector2(int(self.size.x / 2), int(self.size.y / 2))
 
-        self.mousePos = None
-        self.r = 32
-        self.w = self.r*2
-        self.h = self.tile.getSizeWithoutPadding()
+        self.mosueGridPos = Vector2(0, 0)
+        self.pathProvider = PathProvider()
+
+    def toWorldPosition(self, pos) :
+        x = self.tile.halfScale * (3./2 * pos.x)
+        y = self.tile.halfScale * 0.5 * (math.sqrt(3)/2 * pos.x  +  math.sqrt(3) * pos.y)
+        return Vector2(x, y) - self.offset
+        # return pos * self.tile.scale
+
+    def axial_round(self, hex_coords):
+        q, r = hex_coords
+        s = -q - r
+        rq = round(q)
+        rr = round(r)
+        rs = round(s)
+        q_diff = abs(rq - q)
+        r_diff = abs(rr - r)
+        s_diff = abs(rs - s)
+        if q_diff > r_diff and q_diff > s_diff:
+            rq = -rr - rs
+        elif r_diff > s_diff:
+            rr = -rq - rs
+        else:
+            rs = -rq - rr
+        return Vector2(rq, rr) + self.center
 
     def getHex(self, x, y) :
-        if self.mousePos == None :
-             self.mousePos = Vector2()
-
-        r2 = self.r / 2
-        h2 = self.h / 2
-        xx = math.floor(x / r2)
-        yy = math.floor(y / h2)
-        xpos = math.floor(xx / 3)
-        xx %= 6
-        
-        if xx % 3 == 0 :
-            xa = (x % r2) / r2
-            ya = (y % h2) / h2
-            if yy % 2 == 0 :
-                ya = 1 - ya
-            if xx == 3 :
-                xa = 1 - xa
-            if xa > ya :
-                self.mousePos.x = xpos + (-1 if xx == 3 else 0)
-                self.mousePos.y = math.floor(yy / 2)
-                return self.mousePos
-            self.mousePos.x = xpos + (-1 if xx == 0 else 0)
-            self.mousePos.y = math.floor((yy + 1) / 2)
-            return self.mousePos
-        if xx < 3 :
-            self.mousePos.x = xpos + (-1 if xx == 3 else 0)
-            self.mousePos.y = math.floor(yy / 2)
-            return self.mousePos
-        self.mousePos.x = xpos + (-1 if xx == 0 else 0)
-        self.mousePos.y = math.floor((yy + 1) / 2)
-        return self.mousePos
-        
+        q = round((2./3. * x) / self.tile.halfScale)
+        r = round((-1./3. * x + math.sqrt(3)/3. * y) / self.tile.halfScale)
+        if q < 0 and q % 2 == 1 : r -= 1
+        return Vector2(q, r + int(q  / 2))
+    
+    def findPath(self, playerPos, targetPos, path) :
+        self.mosueGridPos = self.getHex(targetPos.x, targetPos.y) + self.center
+        if self.getMapIndex(self.mosueGridPos) == 0 :
+            self.setMapIndexWithSplash(self.mosueGridPos, "Normal")
+        path = self.pathProvider.a_star(self.map, playerPos, self.mosueGridPos)
+        print(path)
+        if path:
+            for i in range(1, len(path)):
+                self.setMapIndex(Vector2(path[i][0], path[i][1]), "Path")
+        return path
 
     def Update(self, input, camera, dt) :
-        print(self.getHex(input.getMousePosition().x, input.getMousePosition().y))
-        # pass
+        pass
 
+    # 맵을 그리기 위한 함수
     def Draw(self, camera, screen):
         for y in range(int(self.size.y)):
             for x in range(int(self.size.x)):
+                # 빈틈 없게 만들기 위해서 일부 오브젝트의 위치를 수정한다
                 offsetY = 0 if x % 2 == 0 else self.tile.halfScale - (self.tile.padding * 0.5)
                 screen.blit(self.tile.getTile(self.map[y][x]), ((x * (self.tile.scale - 16) - self.offset.x)  - camera.getPosition().x, ((y * (self.tile.scale - self.tile.padding) + offsetY) - self.offset.y) - camera.getPosition().y))
 
-    def center(self):
-        return Vector2(int(self.size.x / 2), int(self.size.y / 2))
-    
+    # 하나의 칸만 바꾸기 위한 함수
+    # 바꾸기 이전 데이터가 유의미하다면 저장
     def setMapIndex(self, pos, t) :
-        print(pos)
-        self.map[int(pos.y)][int(pos.x)] = self.tile.tileType[t]
+        if self.getMapIndex(pos) == 1 :
+            self.mapChanged[(pos.x, pos.y)] = self.map[int(pos.y)][int(pos.x)]
+        self.map[int(pos.y)][int(pos.x)] = self.tile.tileType[t] if type(t) == str else t
+
+    def getMapChangeIndex(self, pos) :
+        if pos in self.mapChanged :
+            return self.mapChanged[pos]
+        return "Normal"
+
+    # 주변 칸까지 바꾸기 위한 함수
+    def setMapIndexWithSplash(self, pos, tileType) :
+        self.setMapIndex(pos, tileType)
+        self.showNeighborMap(int(pos.x), int(pos.y))
+
+    # 선택한 칸 주변 칸을 뒤집기 위한 함수
+    def showNeighborMap(self, x, y) :
+        # 3X3으로 탐색하지만 3X3 모두 바꾸면 칸의 모양이 이상하기에
+        # 원하는 모양으로 만들기 위해서는 232 구조가 되어야 한다
+        '''
+                X   
+            X       X
+                X
+            X       X
+                X
+        '''
+        skipYIndex = 1 if x % 2 == 0 else -1
+        for i in range(-1, 2, 1) :
+            for j in range(-1, 2, 1) :
+                if (i == 0 and j == 0) or (i == skipYIndex and j != 0): continue
+                dX = x + j
+                dY = y + i
+                # 배열의 범위를 넘어가지 않게
+                if(dX >= 0 and dX < self.size.x and dY >= 0 and dY < self.size.y) : 
+                    if self.map[dY][dX] == 0:
+                        self.setMapIndex(Vector2(dX, dY), "Normal")
+                        # self.map[dY][dX] = self.tile.tileType["Normal"]
 
     def getMapIndex(self, pos) :
         return self.map[int(pos.y)][int(pos.x)]
