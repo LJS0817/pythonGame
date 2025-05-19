@@ -17,13 +17,15 @@ class Hero(Unit):
     def Move(self, input, mapMng, dt) :
         if input.isKeyPressed(pygame.K_d) :
             self.position.x += 1
-            print(self.position)
-            print(self.prevPos)
+            # print(self.position)
+            # print(self.prevPos)
 
         if(self.prevPos == None or self.prevPos != self.position) :
             print("IN")
             mapMng.setMapIndex(self.position, "Normal")
             self.prevPos = Vector2.copy(self.position)
+
+        # input.camera.smoothMove(mapMng.)
         # if input.isMousePressed(0) :
         #     self.moveTarget = input.getMousePosition()
         # if self.position != self.moveTarget :
@@ -34,7 +36,7 @@ class Hero(Unit):
         
 
     def Draw(self, camera, screen):
-        pygame.draw.circle(screen, "red", self.position - camera.getPosition(), 40)
+        # pygame.draw.circle(screen, "red", Vector2(0, 0) - camera.getPosition(), 40)
         pass
 
     def Clipping(self):

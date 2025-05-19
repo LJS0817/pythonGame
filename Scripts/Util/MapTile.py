@@ -22,5 +22,8 @@ class MapTile :
     def getSizeWithoutPadding(self) :
         return self.scale - self.padding
     
+    def getShift(self) :
+        return self.halfScale - (self.padding * 0.5)
+    
     def getTile(self, idx) :
         return self.imgs[int(idx)]

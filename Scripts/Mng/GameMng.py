@@ -10,6 +10,7 @@ class GameMng(Scene):
             self.hero = Hero(self.map.center())
         
     def Update(self, input, camera, dt):
+        self.map.Update(input, camera, dt)
         self.hero.Update(input, self.map, dt)
 
     def Draw(self, camera, screen):
