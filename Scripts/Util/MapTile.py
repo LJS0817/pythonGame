@@ -3,7 +3,7 @@ import pygame
 class MapTile :
     def __init__(self, imgPro) :
         self.imgs = [imgPro.getImage("Map", "Block"), 
-                     imgPro.getImage("Map", "Ground"), 
+                     imgPro.getAnimatedImage("Map", "Ground"), 
                      imgPro.getImage("Map", "Path"),
                      imgPro.getImage("Map", "Hero"),]
         self.scale = 32
@@ -18,7 +18,8 @@ class MapTile :
 
     def resize(self, scale) :
         for i in range(len(self.imgs)) :
-            self.imgs[i] = pygame.transform.scale(self.imgs[i], (scale, scale))
+            for j in range(len(self.imgs[i])) :
+                self.imgs[i][j] = pygame.transform.scale(self.imgs[i][j], (scale, scale))
 
         self.padding = scale / self.scale * self.padding
         self.scale = scale

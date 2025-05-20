@@ -24,3 +24,6 @@ class ImageProvider :
 
     def getImage(self, gid, id) :
         return self.imageList[gid][id]
+    
+    def getAnimatedImage(self, gid, id, size) :
+        return [self.imageList[gid][f"{id}${i}"] for i in range(1, size + 1)]
