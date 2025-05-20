@@ -32,6 +32,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        input.UpdateEvent(event)
         
         # if event.type == pygame.KEYDOWN :
         #     print("KEYDOWN")
@@ -51,5 +52,7 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+    
+    input.lateUpdate()
 
 pygame.quit()

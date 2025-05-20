@@ -19,7 +19,7 @@ class PathProvider :
             for j in range(-1, 2, 1) :
                 if (i == 0 and j == 0) or (i == skipYIndex and j != 0): continue
                 new_x, new_y = x + j, y + i
-                if 0 <= new_y < len(map) and 0 <= new_x < len(map[0]) and map[new_y][new_x] > -1:  # -1은 이동 불가 공간
+                if 0 <= new_y < len(map) and 0 <= new_x < len(map[0]) and map[new_y][new_x].getTileType() > -1:  # -1은 이동 불가 공간
                     neighbors.append((new_x, new_y))
 
         return neighbors

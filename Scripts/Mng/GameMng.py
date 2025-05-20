@@ -1,6 +1,7 @@
 from Scenes.Scene import Scene
 from Unit.Player.Hero import Hero
 from Mng.MapMng import MapMng
+from Mng.UIMng import UIMng
 
 class GameMng(Scene):
     def __init__(self, imageProvider=None):
@@ -8,6 +9,7 @@ class GameMng(Scene):
         if(imageProvider != None) :
             self.map = MapMng(32, 32, imageProvider)
             self.hero = Hero(self.map.center)
+            self.ui = UIMng(imageProvider)
         
     def Update(self, input, camera, dt):
         self.map.Update(input, camera, dt)
@@ -15,9 +17,10 @@ class GameMng(Scene):
 
     def Draw(self, camera, screen):
         # fill the screen with a color to wipe away anything from last frame
-        screen.fill("purple")
+        screen.fill((47, 65, 88))
         self.map.Draw(camera, screen)
         self.hero.Draw(camera, screen)
+        self.ui.Draw(camera, screen)
 
     def start(self) :
         self.__init__()

@@ -10,6 +10,7 @@ class ImageProvider :
         for subdir, _, files in os.walk(self.base_dir):
             if(len(subdir) < 8) : continue
             group = subdir.split('\\')[1]
+            if group == 'Aseprite' : continue
             if(group not in self.imageList) :
                 self.imageList[group] = {}
 
@@ -26,4 +27,4 @@ class ImageProvider :
         return self.imageList[gid][id]
     
     def getAnimatedImage(self, gid, id, size) :
-        return [self.imageList[gid][f"{id}${i}"] for i in range(1, size + 1)]
+        return [self.imageList[gid][f"{id}{i}"] for i in range(1, size + 1)]

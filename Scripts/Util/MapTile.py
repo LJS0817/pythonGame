@@ -2,10 +2,10 @@ import pygame
 
 class MapTile :
     def __init__(self, imgPro) :
-        self.imgs = [imgPro.getAnimatedImage("Map", "Block"), 
-                     imgPro.getAnimatedImage("Map", "Ground"), 
-                     imgPro.getAnimatedImage("Map", "Path"),
-                     imgPro.getAnimatedImage("Map", "Hero"),]
+        self.imgs = [imgPro.getAnimatedImage("Map", "Block", 6), 
+                     imgPro.getAnimatedImage("Map", "Ground", 6), 
+                     imgPro.getAnimatedImage("Map", "Path", 6),
+                     imgPro.getAnimatedImage("Map", "Hero", 6),]
         self.scale = 32
         self.padding = 4
         self.halfScale = self.scale / 2
@@ -31,5 +31,5 @@ class MapTile :
     def getShift(self) :
         return self.halfScale - (self.padding * 0.5)
     
-    def getTile(self, idx) :
-        return self.imgs[int(idx)]
+    def getTile(self, idx, aniIndex = 0) :
+        return self.imgs[int(idx)][aniIndex]
