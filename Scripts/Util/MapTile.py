@@ -2,10 +2,10 @@ import pygame
 
 class MapTile :
     def __init__(self, imgPro) :
-        self.imgs = [imgPro.getImage("Map", "Block"), 
+        self.imgs = [imgPro.getAnimatedImage("Map", "Block"), 
                      imgPro.getAnimatedImage("Map", "Ground"), 
-                     imgPro.getImage("Map", "Path"),
-                     imgPro.getImage("Map", "Hero"),]
+                     imgPro.getAnimatedImage("Map", "Path"),
+                     imgPro.getAnimatedImage("Map", "Hero"),]
         self.scale = 32
         self.padding = 4
         self.halfScale = self.scale / 2
