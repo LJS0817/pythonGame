@@ -2,64 +2,81 @@ from pygame.math import Vector2
 from Util.MapTile import MapTile
 from Unit.Tile import Tile
 from Provider.PathProvider import PathProvider
-import pygame
-import numpy as np
 import math
 
 class MapMng :
     def __init__(self, mapSizeX, mapSizeY, imgProvider):
         self.size = Vector2(mapSizeX, mapSizeY)
         self.tile = MapTile(imgProvider)
-        self.tile.resize(64)
+        self.tile.resize(96)
         self.mapChanged = {}
         self.mapSwitched = {}
         self.offset = (self.size * 0.5)
-        self.offset.x *= (self.tile.scale - self.tile.getShift() / 2)
-        self.offset.y = (self.offset.y * self.tile.getSizeWithoutPadding()) + (self.tile.getSizeWithoutPadding() / 2)
+        # self.offset.x *= (self.tile.scale)
+        self.offset.y = (self.offset.y * self.tile.getSizeWithoutPadding()) 
         self.center = Vector2(int(self.size.x / 2), int(self.size.y / 2))
 
         self.mosueGridPos = Vector2(0, 0)
         self.pathProvider = PathProvider()
-        
+
         self.map = []
         for y in range(mapSizeY) :
             self.map.append([])
             for x in range(mapSizeX) :
-                offsetY = 0 if x % 2 == 0 else self.tile.halfScale - (self.tile.padding * 0.5)
-                self.map[y].append(Tile(self.tile.tileType["Block"], ((x * (self.tile.scale - 16) - self.offset.x), ((y * (self.tile.scale - self.tile.padding) + offsetY) - self.offset.y)), (x, y), self.tile.scale))
+                offsetY = 0 if x % 2 == 0 else self.tile.getShift()
+                self.map[y].append(Tile(self.tile.tileType["Block"], ((x * (self.tile.scale - self.tile.getShift() / 2) - self.offset.x), ((y * (self.tile.getSizeWithoutPadding()) + offsetY) - self.offset.y)), (x, y), self.tile.scale))
 
     def toWorldPosition(self, pos) :
         return self.map[int(pos.y)][int(pos.x)].center
-        # return pos * self.tile.scale
+       
+    def point_in_hex(self, px, py, center, radius):
+        # 마우스 좌표를 타일 중심 좌표로 변환
+        dx = abs(px - center.x) / radius
+        dy = abs(py - center.y) / radius
 
-    def axial_round(self, hex_coords):
-        q, r = hex_coords
-        s = -q - r
-        rq = round(q)
-        rr = round(r)
-        rs = round(s)
-        q_diff = abs(rq - q)
-        r_diff = abs(rr - r)
-        s_diff = abs(rs - s)
-        if q_diff > r_diff and q_diff > s_diff:
-            rq = -rr - rs
-        elif r_diff > s_diff:
-            rr = -rq - rs
+        return (dy <= math.sqrt(3) / 2) and (math.sqrt(3) * dx + dy <= math.sqrt(3))
+
+    def getHex(self, x, y):
+        tileWidth = self.tile.scale
+        tileHeight = self.tile.getSizeWithoutPadding()
+        shiftY = self.tile.getShift()
+
+        # 보정: 맵 오프셋 (카메라 중앙 정렬 등)
+        px = x + self.offset.x
+        py = y + self.offset.y
+
+        # 1. 대략적인 xIndex 추정
+        xStep = tileWidth - shiftY / 2
+        xIndex = int(px // xStep)
+
+        # 2. y 보정 (홀수 열이면 y 위치 내려가 있음)
+        if xIndex % 2 == 0:
+            py_adj = py
         else:
-            rs = -rq - rr
-        return Vector2(rq, rr) + self.center
+            py_adj = py - shiftY
 
-    def getHex(self, x, y) :
-        q = round((2./3. * x) / self.tile.halfScale)
-        r = round((-1./3. * x + math.sqrt(3)/3. * y) / self.tile.halfScale)
-        if q < 0 and q % 2 == 1 : r -= 1
-        return Vector2(q, r + int(q  / 2))
+        # 3. 대략적인 yIndex 추정
+        yIndex = int(py_adj // tileHeight)
+
+        # 4. 주변 후보 중 실제 마우스 좌표가 육각형 안에 있는지 확인
+        candidates = []
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                cx = xIndex + dx
+                cy = yIndex + dy
+                if 0 <= cx < self.size.x and 0 <= cy < self.size.y:
+                    tile = self.map[cy][cx]
+                    if self.point_in_hex(x, y, tile.center, tileWidth / 2):
+                        return Vector2(cx, cy)
+
+        # 못 찾았으면 추정값 리턴
+        return Vector2(xIndex, yIndex)
     
     def isSameTarget(self, target) :
-        return self.mosueGridPos == self.getHex(target.x, target.y) + self.center
+        return self.mosueGridPos == self.getHex(target.x, target.y)
     
     def findPath(self, playerPos, targetPos, path) :
-        self.mosueGridPos = self.getHex(targetPos.x, targetPos.y) + self.center
+        self.mosueGridPos = self.getHex(targetPos.x, targetPos.y)
         # if self.getMapIndex(self.mosueGridPos) == 0 :
         #     self.setMapIndexWithSplash(self.mosueGridPos, "Normal")
         path = self.pathProvider.a_star(self.map, playerPos, self.mosueGridPos)
@@ -73,9 +90,6 @@ class MapMng :
     def Update(self, input, camera, dt) :
         for key in list(self.mapSwitched.keys()):
             self.mapSwitched[key].Update(dt)
-        # for y in range(int(self.size.y)):
-        #     for x in range(int(self.size.x)):
-        #         self.map[y][x].Update(dt)
 
     # 맵을 그리기 위한 함수
     def Draw(self, camera, screen):
@@ -83,8 +97,6 @@ class MapMng :
             for x in range(int(self.size.x)):
                 # 맵의 인덱스마다 타일을 그림
                 self.map[y][x].Draw(self.tile, camera, screen)
-                # offsetY = 0 if x % 2 == 0 else self.tile.halfScale - (self.tile.padding * 0.5)
-                # screen.blit(self.tile.getTile(self.map[y][x]), ((x * (self.tile.scale - 16) - self.offset.x)  - camera.getPosition().x, ((y * (self.tile.scale - self.tile.padding) + offsetY) - self.offset.y) - camera.getPosition().y))
 
     # 업데이트가 필요 없어지면 딕셔너리에서 삭제
     def removeUpdateList(self, pos) :

@@ -14,7 +14,6 @@ class Hero(Unit):
         self.moveLimitTime = 0.4
 
         self.bag = {}
-        self.HP = 1
         self.SP = 1
     
     def Update(self, input, mapMng, dt):
@@ -55,7 +54,6 @@ class Hero(Unit):
         
 
     def Draw(self, camera, screen):
-        # pygame.draw.circle(screen, "red", Vector2(0, 0) - camera.getPosition(), 40)
         pass
 
     def Clipping(self):

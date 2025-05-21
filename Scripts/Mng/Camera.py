@@ -7,9 +7,6 @@ class Camera :
 
     def getPosition(self) :
         return self.position
-    
-    # def getOffset(self) :
-    #     return self.position + (self.size / 2)
 
     def getCenter(self) :
         return self.size / 2
