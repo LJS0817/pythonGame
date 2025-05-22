@@ -1,23 +1,29 @@
 from ..Unit import Unit
+from Unit.UI.HeroUI import HeroUI
 from pygame.math import Vector2
 from Unit.Inventory.Inventory import Inventory
 import pygame
 
 class Hero(Unit):
-    def __init__(self, center, imgPro) :
+    def __init__(self, center, imgPro, itemPro, uiMng) :
         super().__init__()
         self.position = center
         self.prevPos = None
         self.path = None
         self.targetIndex = 0
+        self.itemProvider = itemPro
 
         self.moveTime = 0
         self.moveLimitTime = 0.4
 
+        self.font = uiMng
         self.bag = Inventory(imgPro)
+        self.UI = HeroUI(imgPro)
         self.SP = 1
     
     def Update(self, input, mapMng, dt):
+        if input.isKeyDown(pygame.K_a) :
+            self.bag.addItem("1", self.itemProvider.getItem("1"), 1)
         if input.isKeyDown(pygame.K_i) :
             self.showInventory()
         self.Move(input, mapMng, dt)
@@ -60,6 +66,7 @@ class Hero(Unit):
 
     def Draw(self, camera, screen):
         self.bag.drawItem(camera, screen)
+        self.UI.Draw(camera, screen)
         pass
 
     def Clipping(self):

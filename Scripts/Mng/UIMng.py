@@ -1,10 +1,13 @@
 import pygame
-from Unit.UI.HeroUI import HeroUI
+import os
 
 class UIMng :
     def __init__(self, imPro) :
-        self.font = pygame.font.SysFont('malgungothic', 16)
-        self.heroUI = HeroUI(imPro)
+        self.font_path = os.path.join(os.path.dirname(__file__), "..","..", "Font", "font.ttf")
+        # 폰트 크기 저장
+        self.font = {}
 
-    def Draw(self, camera, screen) :
-        self.heroUI.Draw(camera, screen)
+    def getFont(self, size) :
+        if size not in self.font:
+            self.font[size] = pygame.font.Font(self.font_path, size)
+        return self.font[size]

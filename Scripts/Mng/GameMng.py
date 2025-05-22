@@ -8,10 +8,10 @@ class GameMng(Scene):
     def __init__(self, imageProvider=None):
         super().__init__(self, "GameScene")
         if(imageProvider != None) :
-            self.itemProvider = ItemProvider(imageProvider)
-            self.map = MapMng(32, 32, imageProvider)
-            self.hero = Hero(self.map.center, imageProvider)
             self.ui = UIMng(imageProvider)
+            self.itemProvider = ItemProvider(imageProvider, self.ui.getFont(18))
+            self.map = MapMng(32, 32, imageProvider)
+            self.hero = Hero(self.map.center, imageProvider, self.itemProvider, self.ui)
         
     def Update(self, input, camera, dt):
         self.map.Update(input, camera, dt)
@@ -22,7 +22,6 @@ class GameMng(Scene):
         screen.fill((47, 65, 88))
         self.map.Draw(camera, screen)
         self.hero.Draw(camera, screen)
-        self.ui.Draw(camera, screen)
 
     def start(self) :
         self.__init__()

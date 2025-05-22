@@ -9,9 +9,17 @@ class Inventory :
         self.items = {
             
         }
+
+        self.background = pygame.Surface((1280, 600), pygame.SRCALPHA)
+        self.background.fill((0, 0, 0, 128))
         self.img = imgPro.getImage("UI", "Inv_Bag")
         self.img = pygame.transform.scale(self.img, (self.img.get_width() * 8, self.img.get_height() * 8))
+        self.buttons = pygame.Surface((160, 70), pygame.SRCALPHA)
+        self.buttons.blits()
         self.position = Vector2(-self.img.get_width() / 2, -self.img.get_height() / 2)
+        
+        self.sorted_item_keys = []  # 정렬된 키를 저장할 리스트
+        self.items_changed = False   # 아이템 목록 변경 여부 플래그
 
     def showInventory(self) :
         self.showItem = not self.showItem 
@@ -35,9 +43,25 @@ class Inventory :
             self.items[id].use(cnt)
             if self.items[id].isEmpty() :
                 self.removeItem(id)
+
+    def quicksort(self, arr):
+        if len(arr) <= 1:
+            return arr
+
+        pivot = arr[len(arr) // 2]
+        left = [x for x in arr if x < pivot]
+        mid = [x for x in arr if x == pivot]
+        right = [x for x in arr if x > pivot]
+
+        return self.quicksort(left) + mid + self.quicksort(right)
+
+    def getSortedKeys(self):
+        keys = list(self.items.keys())
+        return self.quicksort(keys)
     
     def drawItem(self, camera, screen) :
         if self.showItem :
+            screen.blit(self.background, (0, 0))
             screen.blit(self.img, self.position + camera.getCenter())
-            for i in len(list(self.items.keys())) :
-                self.items[self.items.keys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(55, 145))
+            for i in range(len(list(self.items.keys()))) :
+                self.items[list(self.items.keys())[i]].draw(screen, self.position + camera.getCenter() + Vector2(48, 136))
