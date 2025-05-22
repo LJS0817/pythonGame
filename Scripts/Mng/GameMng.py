@@ -2,11 +2,13 @@ from Scenes.Scene import Scene
 from Unit.Player.Hero import Hero
 from Mng.MapMng import MapMng
 from Mng.UIMng import UIMng
+from Provider.ItemProvider import ItemProvider
 
 class GameMng(Scene):
     def __init__(self, imageProvider=None):
         super().__init__(self, "GameScene")
         if(imageProvider != None) :
+            self.itemProvider = ItemProvider(imageProvider)
             self.map = MapMng(32, 32, imageProvider)
             self.hero = Hero(self.map.center, imageProvider)
             self.ui = UIMng(imageProvider)

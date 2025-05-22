@@ -8,8 +8,7 @@ class Item:
         self.count = 0
 
     def draw(self, surface, pos):
-        rect = self.icon.get_rect(topleft=pos)
-        surface.blit(self.icon, rect)
+        surface.blit(self.icon, pos)
 
     def getInfo(self) :
         return f'{self.name}, {self.description}'

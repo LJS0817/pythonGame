@@ -1,6 +1,5 @@
 from pygame.math import Vector2
 import pygame.transform
-from Unit.Inventory.Item import Item
 
 class Inventory :
     def __init__(self, imgPro) :
@@ -8,7 +7,7 @@ class Inventory :
         self.ROW_COUNT = 5
         self.showItem = False
         self.items = {
-            "TEST" : Item("Test", pygame.transform.scale(imgPro.getImage("Game", "Stick"), (48, 48)), "123456")
+            
         }
         self.img = imgPro.getImage("UI", "Inv_Bag")
         self.img = pygame.transform.scale(self.img, (self.img.get_width() * 8, self.img.get_height() * 8))
