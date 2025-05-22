@@ -5,7 +5,17 @@ class Item:
         self.name = name                # 아이템 이름
         self.icon = icon_surface        # pygame.Surface 타입 아이콘
         self.description = description  # 아이템 설명 (툴팁용 등)
+        self.count = 0
 
     def draw(self, surface, pos):
         rect = self.icon.get_rect(topleft=pos)
         surface.blit(self.icon, rect)
+
+    def getInfo(self) :
+        return f'{self.name}, {self.description}'
+    
+    def addCount(self, cnt) :
+        self.count += cnt
+    
+    def isEmpty(self) :
+        return self.count < 1

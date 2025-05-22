@@ -12,13 +12,13 @@ class MapMng :
         self.mapChanged = {}
         self.mapSwitched = {}
         self.offset = (self.size * 0.5)
-        # self.offset.x *= (self.tile.scale)
-        self.offset.y = (self.offset.y * self.tile.getSizeWithoutPadding()) 
+        self.offset.x *= (self.tile.scale - self.tile.getShift() / 2)
+        self.offset.y *= self.tile.getSizeWithoutPadding()
         self.center = Vector2(int(self.size.x / 2), int(self.size.y / 2))
 
         self.mosueGridPos = Vector2(0, 0)
         self.pathProvider = PathProvider()
-
+        self.SQRT3 = math.sqrt(3)
         self.map = []
         for y in range(mapSizeY) :
             self.map.append([])
@@ -34,7 +34,7 @@ class MapMng :
         dx = abs(px - center.x) / radius
         dy = abs(py - center.y) / radius
 
-        return (dy <= math.sqrt(3) / 2) and (math.sqrt(3) * dx + dy <= math.sqrt(3))
+        return (dy <= self.SQRT3 / 2) and (self.SQRT3 * dx + dy <= self.SQRT3)
 
     def getHex(self, x, y):
         tileWidth = self.tile.scale
@@ -59,7 +59,6 @@ class MapMng :
         yIndex = int(py_adj // tileHeight)
 
         # 4. 주변 후보 중 실제 마우스 좌표가 육각형 안에 있는지 확인
-        candidates = []
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
                 cx = xIndex + dx
