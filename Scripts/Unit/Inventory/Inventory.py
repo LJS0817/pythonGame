@@ -1,16 +1,24 @@
 from pygame.math import Vector2
+import pygame.transform
+from Unit.Inventory.Item import Item
 
 class Inventory :
     def __init__(self, imgPro) :
         self.ITEM_COUNT = 10
         self.ROW_COUNT = 5
         self.showItem = False
-        self.items = {}
-        self.img = imgPro.getImage("Game", "Bag")
-        self.position = Vector2(0, 0)
+        self.items = {
+            "TEST" : Item("Test", pygame.transform.scale(imgPro.getImage("Game", "Stick"), (48, 48)), "123456")
+        }
+        self.img = imgPro.getImage("UI", "Inv_Bag")
+        self.img = pygame.transform.scale(self.img, (self.img.get_width() * 8, self.img.get_height() * 8))
+        self.position = Vector2(-self.img.get_width() / 2, -self.img.get_height() / 2)
 
-    def showItem(self) :
+    def showInventory(self) :
         self.showItem = not self.showItem 
+
+    def isShowing(self) :
+        return self.showItem
 
     def addItem(self, id, item, cnt) :
         if id in self.items :
@@ -29,8 +37,8 @@ class Inventory :
             if self.items[id].isEmpty() :
                 self.removeItem(id)
     
-    def drawItem(self, screen) :
+    def drawItem(self, camera, screen) :
         if self.showItem :
-            screen.blit(self.img, self.position)
-            for key in self.items.keys() :
-                print(self.items[key].getInfo())
+            screen.blit(self.img, self.position + camera.getCenter())
+            for i in len(list(self.items.keys())) :
+                self.items[self.items.keys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(55, 145))
