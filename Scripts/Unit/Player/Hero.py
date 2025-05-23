@@ -24,9 +24,20 @@ class Hero(Unit):
     def Update(self, input, mapMng, dt):
         if input.isKeyDown(pygame.K_a) :
             self.bag.addItem("1", self.itemProvider.getItem("1"), 1)
+        if input.isKeyDown(pygame.K_s) :
+            self.bag.addItem("2", self.itemProvider.getItem("2"), 1)
+        if input.isKeyDown(pygame.K_d) :
+            self.bag.addItem("3", self.itemProvider.getItem("3"), 1)
+        if input.isKeyDown(pygame.K_w) :
+            self.bag.sortItem()
         if input.isKeyDown(pygame.K_i) :
             self.showInventory()
         self.Move(input, mapMng, dt)
+        
+        if input.isMouseDown(0) :
+            for btn in self.bag.buttons :
+                if btn.rect.collidepoint(input.mouse.get_pos()) :
+                    btn.activate()
 
     def FollowPath(self, dt) :
         if self.path == None : return

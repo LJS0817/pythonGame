@@ -1,4 +1,5 @@
 from pygame.math import Vector2
+from Unit.UI.Button import Button
 import pygame.transform
 
 class Inventory :
@@ -6,20 +7,23 @@ class Inventory :
         self.ITEM_COUNT = 10
         self.ROW_COUNT = 5
         self.showItem = False
-        self.items = {
-            
-        }
+        self.items = { }
 
         self.background = pygame.Surface((1280, 600), pygame.SRCALPHA)
         self.background.fill((0, 0, 0, 128))
         self.img = imgPro.getImage("UI", "Inv_Bag")
         self.img = pygame.transform.scale(self.img, (self.img.get_width() * 8, self.img.get_height() * 8))
-        self.buttons = pygame.Surface((160, 70), pygame.SRCALPHA)
-        self.buttons.blits()
+        self.btnImg = imgPro.getImage("UI", "Inv_Btn")
+        self.btnImg = pygame.transform.scale(self.btnImg, (self.btnImg.get_size()[0] * 8, self.btnImg.get_size()[1] * 8))
+        self.buttons = [
+            Button(self.btnImg, "close", self.showInventory),
+            Button(self.btnImg, "sort", self.sortItem),
+            Button(self.btnImg, "craft", lambda: print('craft Menu')),
+        ]
         self.position = Vector2(-self.img.get_width() / 2, -self.img.get_height() / 2)
         
         self.sorted_item_keys = []  # 정렬된 키를 저장할 리스트
-        self.items_changed = False   # 아이템 목록 변경 여부 플래그
+        self.sort_trigger = False   # 아이템 목록 변경 여부 플래그
 
     def showInventory(self) :
         self.showItem = not self.showItem 
@@ -31,6 +35,7 @@ class Inventory :
         if id in self.items :
             self.items[id].addCount(cnt)
         else :
+            self.sorted_item_keys.append(id)
             self.items[id] = item
             self.addItem(id, item, cnt)
 
@@ -55,13 +60,20 @@ class Inventory :
 
         return self.quicksort(left) + mid + self.quicksort(right)
 
-    def getSortedKeys(self):
-        keys = list(self.items.keys())
-        return self.quicksort(keys)
+    def sortItem(self) :
+        self.sort_trigger = True
+
+    def getKeys(self):
+        if self.sort_trigger :
+            self.sorted_item_keys = self.quicksort(list(self.items.keys()))
+            self.sort_trigger = False
+        return self.sorted_item_keys
     
     def drawItem(self, camera, screen) :
         if self.showItem :
             screen.blit(self.background, (0, 0))
             screen.blit(self.img, self.position + camera.getCenter())
-            for i in range(len(list(self.items.keys()))) :
-                self.items[list(self.items.keys())[i]].draw(screen, self.position + camera.getCenter() + Vector2(48, 136))
+            for i in range(len(self.getKeys())) :
+                self.items[self.getKeys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(48 + 104* i, 136))
+            for i in range(len(self.buttons)) :
+                self.buttons[i].draw(screen, Vector2(self.position.x + camera.getCenter().x + self.img.get_rect().right, self.position.y + camera.getCenter().y + 100 + 80 * i))
