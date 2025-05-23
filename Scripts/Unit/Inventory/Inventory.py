@@ -15,6 +15,8 @@ class Inventory :
         self.img = pygame.transform.scale(self.img, (self.img.get_width() * 8, self.img.get_height() * 8))
         self.btnImg = imgPro.getImage("UI", "Inv_Btn")
         self.btnImg = pygame.transform.scale(self.btnImg, (self.btnImg.get_size()[0] * 8, self.btnImg.get_size()[1] * 8))
+        self.itemInfoImg = imgPro.getImage("UI", "Inv_Info")
+        self.itemInfoImg = pygame.transform.scale(self.itemInfoImg, (self.itemInfoImg.get_width() * 8, self.itemInfoImg.get_height() * 8))
         self.buttons = [
             Button(self.btnImg, None, "close", self.showInventory),
             Button(self.btnImg, None, "sort", self.sortItem),
@@ -74,6 +76,12 @@ class Inventory :
             screen.blit(self.background, (0, 0))
             screen.blit(self.img, self.position + camera.getCenter())
             for i in range(len(self.getKeys())) :
+                if self.items[self.getKeys()[i]].icon.get_rect().collidepoint(pygame.mouse.get_pos()) :
+                    print("ASDAS")
+                    count_surface = self.font.render(str(self.items[self.getKeys()[i]].name), True, (84, 56, 35))
+                    count_pos = count_surface.get_rect(center=(30, 20) )
+                    self.itemInfoImg.blit(count_surface, count_pos)
                 self.items[self.getKeys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(48 + 104* i, 136))
             for i in range(len(self.buttons)) :
                 self.buttons[i].draw(screen, Vector2(self.position.x + camera.getCenter().x + self.img.get_rect().right, self.position.y + camera.getCenter().y + 100 + 80 * i))
+            screen.blit(self.itemInfoImg, self.position + camera.getCenter() - Vector2(self.itemInfoImg.get_width() - 8, -80))

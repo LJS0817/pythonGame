@@ -13,7 +13,6 @@ class Item:
         surface.blit(self.icon, pos)
 
         count_surface = self.font.render(str(self.count), True, (84, 56, 35))
-        # 중심 아래에 텍스트 배치
         count_pos = count_surface.get_rect(center=(pos.x + 32, pos.y + 80) )
         surface.blit(count_surface, count_pos)
 
