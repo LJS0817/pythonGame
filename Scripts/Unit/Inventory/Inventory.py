@@ -16,9 +16,9 @@ class Inventory :
         self.btnImg = imgPro.getImage("UI", "Inv_Btn")
         self.btnImg = pygame.transform.scale(self.btnImg, (self.btnImg.get_size()[0] * 8, self.btnImg.get_size()[1] * 8))
         self.buttons = [
-            Button(self.btnImg, "close", self.showInventory),
-            Button(self.btnImg, "sort", self.sortItem),
-            Button(self.btnImg, "craft", lambda: print('craft Menu')),
+            Button(self.btnImg, None, "close", self.showInventory),
+            Button(self.btnImg, None, "sort", self.sortItem),
+            Button(self.btnImg, None, "craft", lambda: print('craft Menu')),
         ]
         self.position = Vector2(-self.img.get_width() / 2, -self.img.get_height() / 2)
         

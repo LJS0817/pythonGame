@@ -1,14 +1,14 @@
 import pygame
 
 class Button :
-    def __init__(self, img, name, action) :
+    def __init__(self, img, icon, name, action) :
         self.img = img
+        self.icon = icon
         self.rect = None
         self.name = name
         self.action = action
 
     def draw(self, screen, pos) :
-        self.pos = pos
         self.rect = self.img.get_rect(topleft=pos)
         screen.blit(self.img, self.rect)
 
