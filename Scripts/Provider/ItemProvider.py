@@ -5,9 +5,9 @@ from Unit.Inventory.Item import Item
 class ItemProvider :
     def __init__(self, imgPro, font) :
         self.itemList = {
-            "1" : Item(font, "Log", pygame.transform.scale(imgPro.getImage("Game", "Log"), (64, 64)), "Can Make Something"),
-            "2" : Item(font, "Stone", pygame.transform.scale(imgPro.getImage("Game", "Stone"), (64, 64)), "Can Break Something"),
-            "3" : Item(font, "Rope", pygame.transform.scale(imgPro.getImage("Game", "Rope"), (64, 64)), "Can Tie Something"),
+            "1" : Item(font, "Log", pygame.transform.scale(imgPro.getImage("Game", "Log"), (64, 64)), "Can Make\nSomething"),
+            "2" : Item(font, "Stone", pygame.transform.scale(imgPro.getImage("Game", "Stone"), (64, 64)), "Can Break\nSomething"),
+            "3" : Item(font, "Rope", pygame.transform.scale(imgPro.getImage("Game", "Rope"), (64, 64)), "Can Tie\nSomething"),
         }
         self.itemCount = len(self.itemList)
         

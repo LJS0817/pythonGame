@@ -9,7 +9,7 @@ class GameMng(Scene):
         super().__init__(self, "GameScene")
         if(imageProvider != None) :
             self.ui = UIMng(imageProvider)
-            self.itemProvider = ItemProvider(imageProvider, self.ui.getFont(18))
+            self.itemProvider = ItemProvider(imageProvider, self.ui)
             self.map = MapMng(32, 32, imageProvider)
             self.hero = Hero(self.map.center, imageProvider, self.itemProvider, self.ui)
         

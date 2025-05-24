@@ -3,11 +3,15 @@ from Unit.UI.Button import Button
 import pygame.transform
 
 class Inventory :
-    def __init__(self, imgPro) :
+    def __init__(self, imgPro, font) :
         self.ITEM_COUNT = 10
         self.ROW_COUNT = 5
         self.showItem = False
         self.items = { }
+        self.font = font
+        self.itemTitleFont = font.getFont(20)
+        self.itemTitlePosition = Vector2(30, 20)
+        self.itemDescPosition = Vector2(30, 40)
 
         self.background = pygame.Surface((1280, 600), pygame.SRCALPHA)
         self.background.fill((0, 0, 0, 128))
@@ -75,13 +79,12 @@ class Inventory :
         if self.showItem :
             screen.blit(self.background, (0, 0))
             screen.blit(self.img, self.position + camera.getCenter())
+            
+            r = self.itemInfoImg.get_rect(topleft = self.position + camera.getCenter() - Vector2(self.itemInfoImg.get_width() - 8, -80))
+            screen.blit(self.itemInfoImg, r)
             for i in range(len(self.getKeys())) :
-                if self.items[self.getKeys()[i]].icon.get_rect().collidepoint(pygame.mouse.get_pos()) :
-                    print("ASDAS")
-                    count_surface = self.font.render(str(self.items[self.getKeys()[i]].name), True, (84, 56, 35))
-                    count_pos = count_surface.get_rect(center=(30, 20) )
-                    self.itemInfoImg.blit(count_surface, count_pos)
                 self.items[self.getKeys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(48 + 104* i, 136))
+                if self.items[self.getKeys()[i]].rect.collidepoint(pygame.mouse.get_pos()) :
+                    self.items[self.getKeys()[i]].drawFont(screen, r.topleft, self.itemTitlePosition, self.itemDescPosition)
             for i in range(len(self.buttons)) :
                 self.buttons[i].draw(screen, Vector2(self.position.x + camera.getCenter().x + self.img.get_rect().right, self.position.y + camera.getCenter().y + 100 + 80 * i))
-            screen.blit(self.itemInfoImg, self.position + camera.getCenter() - Vector2(self.itemInfoImg.get_width() - 8, -80))

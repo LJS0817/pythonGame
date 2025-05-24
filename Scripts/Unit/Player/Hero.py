@@ -17,7 +17,7 @@ class Hero(Unit):
         self.moveLimitTime = 0.4
 
         self.font = uiMng
-        self.bag = Inventory(imgPro)
+        self.bag = Inventory(imgPro, self.font)
         self.UI = HeroUI(imgPro)
         self.SP = 1
     
@@ -35,9 +35,10 @@ class Hero(Unit):
         self.Move(input, mapMng, dt)
         
         if input.isMouseDown(0) :
-            for btn in self.bag.buttons :
-                if btn.rect.collidepoint(input.mouse.get_pos()) :
-                    btn.activate()
+            if self.bag.isShowing() :
+                for btn in self.bag.buttons :
+                    if btn.rect.collidepoint(input.mouse.get_pos()) :
+                        btn.activate()
 
     def FollowPath(self, dt) :
         if self.path == None : return
@@ -52,8 +53,12 @@ class Hero(Unit):
 
     def Move(self, input, mapMng, dt) :
         if not self.bag.isShowing() :
+
+            if input.isMouseDown(1):
+                if not mapMng.isSameTarget(input.getMousePosition()) :
+                    mapMng.setMapIndex(mapMng.getHex(input.getMousePosition().x, input.getMousePosition().y), -1)
+
             if input.isMouseDown(0):
-                print("TEST")
                 if not mapMng.isSameTarget(input.getMousePosition()) : 
                     if self.path != None :
                         for i in range(self.targetIndex, len(self.path)) :

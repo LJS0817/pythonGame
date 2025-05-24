@@ -31,7 +31,8 @@ class Tile:
                     self.callback = None
 
     def Draw(self, tile, camera, screen):
-        screen.blit(tile.getTile(self.tileType, self.aniIndex), self.position - camera.getPosition())
+        if self.tileType > -1 :
+            screen.blit(tile.getTile(self.tileType, self.aniIndex), self.position - camera.getPosition())
 
     def setTileType(self, t, callback) :
         if t == self.targetTileType : return
