@@ -27,30 +27,17 @@ imageProvider.loadImage()
 sceneManager = SceneState([GameMng(imageProvider=imageProvider)])
 
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         input.UpdateEvent(event)
         
-        # if event.type == pygame.KEYDOWN :
-        #     print("KEYDOWN")
-
-    # camera.setPosition(pygame.mouse.get_pos())
     input.Update()
     sceneManager.getCurrentScene().Update(input, camera, dt)
     sceneManager.getCurrentScene().Draw(camera, screen)
 
-    # keys = pygame.key.get_pressed()
-    # if keys[pygame.K_w]:
-
-    # flip() the display to put your work on screen
     pygame.display.flip()
 
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
     dt = clock.tick(60) / 1000
     
     input.lateUpdate()

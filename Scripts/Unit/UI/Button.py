@@ -2,8 +2,13 @@ import pygame
 
 class Button :
     def __init__(self, img, icon, name, action) :
-        self.img = img
-        self.icon = icon
+        self.img = img.copy()
+        if icon != None :
+            self.icon = pygame.transform.scale(icon, (icon.get_size()[0] * 1.75, icon.get_size()[1] * 1.75))
+            img_rect = self.img.get_rect()
+            icon_rect = self.icon.get_rect(center=img_rect.center)
+            icon_rect.x -= 4
+            self.img.blit(self.icon, icon_rect.topleft)
         self.rect = None
         self.name = name
         self.action = action

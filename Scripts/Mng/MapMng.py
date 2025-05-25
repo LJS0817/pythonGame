@@ -41,24 +41,19 @@ class MapMng :
         tileHeight = self.tile.getSizeWithoutPadding()
         shiftY = self.tile.getShift()
 
-        # 보정: 맵 오프셋 (카메라 중앙 정렬 등)
         px = x + self.offset.x
         py = y + self.offset.y
 
-        # 1. 대략적인 xIndex 추정
         xStep = tileWidth - shiftY / 2
         xIndex = int(px // xStep)
 
-        # 2. y 보정 (홀수 열이면 y 위치 내려가 있음)
         if xIndex % 2 == 0:
             py_adj = py
         else:
             py_adj = py - shiftY
 
-        # 3. 대략적인 yIndex 추정
         yIndex = int(py_adj // tileHeight)
 
-        # 4. 주변 후보 중 실제 마우스 좌표가 육각형 안에 있는지 확인
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
                 cx = xIndex + dx
@@ -68,7 +63,6 @@ class MapMng :
                     if self.point_in_hex(x, y, tile.center, tileWidth / 2):
                         return Vector2(cx, cy)
 
-        # 못 찾았으면 추정값 리턴
         return Vector2(xIndex, yIndex)
     
     def isSameTarget(self, target) :
@@ -108,7 +102,7 @@ class MapMng :
         # print(self.mapSwitched)
         if self.getMapIndex(pos) < 2 :
             self.mapChanged[(pos.x, pos.y)] = self.map[int(pos.y)][int(pos.x)].getTileType()
-        if self.map[int(pos.y)][int(pos.x)].getTileType() == 3 and t == 0 :
+        if self.getMapIndex(pos) == 3 and t == 0 :
             t = 1
         self.map[int(pos.y)][int(pos.x)].setTileType(self.tile.tileType[t] if type(t) == str else t, lambda: self.removeUpdateList(pos))
 

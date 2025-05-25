@@ -16,7 +16,6 @@ class Tile:
         self.SWITCH_INDEX = 3
         self.callback = None
         
-    
     def Update(self, dt):
         if(self.aniIndex != 0) :
             self.aniTime += dt
