@@ -29,6 +29,7 @@ class MapMng :
     def toWorldPosition(self, pos) :
         return self.map[int(pos.y)][int(pos.x)].center
        
+    # 마우스 좌표를 인덱스 형태로 변환
     def point_in_hex(self, px, py, center, radius):
         # 마우스 좌표를 타일 중심 좌표로 변환
         dx = abs(px - center.x) / radius
@@ -36,6 +37,7 @@ class MapMng :
 
         return (dy <= self.SQRT3 / 2) and (self.SQRT3 * dx + dy <= self.SQRT3)
 
+    # 마우스 좌료를 인덱스 형태로 변환한 후의 보정
     def getHex(self, x, y):
         tileWidth = self.tile.scale
         tileHeight = self.tile.getSizeWithoutPadding()
@@ -65,18 +67,28 @@ class MapMng :
 
         return Vector2(xIndex, yIndex)
     
+    # 마우스 클릭한 위치가 같은 위치인지 판다ㅏㄴ
     def isSameTarget(self, target) :
         return self.mosueGridPos == self.getHex(target.x, target.y)
     
+    # 경로 탐색 함수
     def findPath(self, playerPos, targetPos, path) :
+        # 마우스 위치나 특정 오브젝트 위치를 맵 인덱스 형태로 변경
+        # 사각형이 아닌 육각형으로 맵을 구성하였기에 판정 또한 육각형을 기준으로 해야함함
         self.mosueGridPos = self.getHex(targetPos.x, targetPos.y)
+
         # if self.getMapIndex(self.mosueGridPos) == 0 :
         #     self.setMapIndexWithSplash(self.mosueGridPos, "Normal")
+
+        # 변환한 인덱스를 가지고 A* 알고리즘 사용용
         path = self.pathProvider.a_star(self.map, playerPos, self.mosueGridPos)
         print(path)
+        # 경로를 다른 블록으로 변경하여 경로를 시각적으로 표시
         if path:
             for i in range(1, len(path)):
                 self.setMapIndex(Vector2(path[i][0], path[i][1]), "Path")
+        
+        # 경로 반환
         return path
 
     # 맵 전체가 아닌 바뀔 필요가 있는 타일만 업데이트
@@ -106,7 +118,7 @@ class MapMng :
             t = 1
         self.map[int(pos.y)][int(pos.x)].setTileType(self.tile.tileType[t] if type(t) == str else t, lambda: self.removeUpdateList(pos))
 
-    # 
+    # 맵이 바뀌기 전의 상태를 저장하고 있다가 바뀔 때 이전 상태로 되돌리기 위한 함수수
     def getMapChangeIndex(self, pos) :
         if pos in self.mapChanged :
             idx = self.mapChanged[pos]
