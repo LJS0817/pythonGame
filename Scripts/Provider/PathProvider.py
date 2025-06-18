@@ -3,6 +3,7 @@ from Util.Node import Node
 
 class PathProvider :
     def __init__(self):
+        # 미리 생성
         self.open_list = []
         self.closed_set = set()
 
@@ -13,13 +14,16 @@ class PathProvider :
         # [(-1, -1), (0, -1), (1, -1),
         #  (-1,  0),          (1,  0),
         #  (-1,  1), (0,  1), (1,  1)]  # 이동 가능한 범위
+        # 육각형 그리드 특성으로 인해서 일부 인덱스 제외
         skipYIndex = 1 if x % 2 == 0 else -1
 
         for i in range(-1, 2, 1) :
             for j in range(-1, 2, 1) :
+                # 육각형 그리드 특성으로 인해서 일부 인덱스 제외
                 if (i == 0 and j == 0) or (i == skipYIndex and j != 0): continue
                 new_x, new_y = x + j, y + i
-                if 0 <= new_y < len(map) and 0 <= new_x < len(map[0]) and map[new_y][new_x].getTileType() > -1:  # -1은 이동 불가 공간
+                # -1은 이동 불가 공간
+                if 0 <= new_y < len(map) and 0 <= new_x < len(map[0]) and map[new_y][new_x].getTileType() > -1: 
                     neighbors.append((new_x, new_y))
 
         return neighbors

@@ -8,6 +8,7 @@ class InputMng :
         self.mouseDownEvent = [False, False]
         self.keyEvents = {}
 
+    # Down, Up을 위한 이벤트 감지 업데이트
     def UpdateEvent(self, event) :
         if event.type == pygame.KEYDOWN :
             self.keyEvents[event.key] = True
@@ -17,10 +18,12 @@ class InputMng :
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.mouseDownEvent[0] = event.button == 1
             self.mouseDownEvent[1] = event.button == 3
-            
+
+    # Pressed를 위한 업데이트     
     def Update(self) :
         self.keys = pygame.key.get_pressed()
 
+    # 이벤트 초기화를 위해서 업데이트와 렌더링이 끝난 이후에 호출
     def lateUpdate(self):
         self.keyEvents.clear()
         if self.mouseDownEvent[0] or self.mouseDownEvent[1] :

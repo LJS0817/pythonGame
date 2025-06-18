@@ -19,17 +19,21 @@ class Item:
         self.countFont = self.font.getFont(18)
         self.titleFont = self.font.getFont(20)
 
+    # 아이템 이름 출력을 위한 함수
     def drawTitle(self, surface, pos) :
         titleFont = self.titleFont.render(str(self.name), True, (84, 56, 35))
         title_pos = titleFont.get_rect(topleft=pos)
         surface.blit(titleFont, title_pos)
 
+    # 이름 출력 함수
     def drawFont(self, surface, pos, tPos) :
         self.drawTitle(surface, pos + tPos)
 
+    # 렌더링
     def draw(self, surface, pos):
         # 디버깅용 배경
         # pygame.draw.rect(surface, (0, 0, 255), (pos.x, pos.y, 64, 64))
+        
         self.rect = self.icon.get_rect(topleft=pos)
         surface.blit(self.icon, self.rect)
 

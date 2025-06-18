@@ -1,5 +1,6 @@
 from pygame import Vector2
 
+# 일부 객체를 상속을 위한 클래스
 class Unit:
     def __init__(self):
         self.position = Vector2(0, 0)

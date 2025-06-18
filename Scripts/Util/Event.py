@@ -8,6 +8,7 @@ class Event:
         self.rect = None  # 카드 위치를 저장할 Rect
         self.applied = False  # 이미 적용됐는지 여부
 
+    # 클릭 시 필요한 이벤트 발생
     def apply(self, hero):
         if self.effect_type == "AP":
             hero.AP = min(hero.ApLimit, hero.AP + self.value)

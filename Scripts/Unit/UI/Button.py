@@ -1,5 +1,6 @@
 import pygame
 
+# 간단한 UI 버튼
 class Button :
     def __init__(self, img, icon, name, action) :
         self.img = img.copy()

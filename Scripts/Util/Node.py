@@ -1,3 +1,4 @@
+# A*를 위한 노드 클래스
 class Node:
     def __init__(self, position=None, parent=None):
         self.position = position

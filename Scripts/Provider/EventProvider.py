@@ -6,7 +6,9 @@ class EventProvider:
     def __init__(self, font, imgPro, itemPro):
         self.imgPro = imgPro
         self.itemPro = itemPro
-        self.events = []  # 현재 생성된 이벤트
+        # 생성된 이벤트 리스트
+        self.events = []
+        # 생성될 수 있는 최대 이벤트 개수
         self.eventLimit = 3
         self.last_generated_pos = None
 
@@ -18,6 +20,7 @@ class EventProvider:
         self.card_template.set_alpha(185)
         self.card_template.fill((50, 50, 50))
 
+        # 기본 이벤트
         self.effects = [
             {
                 "desc": "You found a Log (+1)",
@@ -59,11 +62,13 @@ class EventProvider:
     def isShowing(self) :
         return self.enable
 
+    # 이베트 생성
     def generateEvents(self, currentPos, inven, isNearRiver):
         self.enable = True
         self.last_generated_pos = currentPos
         self.events.clear()
 
+        # 특정 조건에 생성될 수 있는 이벤트 추가
         custom_effects = self.effects.copy()
         if inven.hasItem("1") and inven.hasItem("2") and inven.hasItem("3"):
             custom_effects.append({
@@ -111,7 +116,8 @@ class EventProvider:
             effect = random.choice(custom_effects)
             event = Event(effect["desc"], self.font, effect["type"], effect["value"])
             self.events.append(event)
-
+    
+    # 클릭 시 호출하여 이벤트 발생 처리
     def handle_click(self, mouse_pos, hero):
         for event in self.events[:]:
             if event.rect and event.rect.collidepoint(mouse_pos) and not event.applied:

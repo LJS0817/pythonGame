@@ -1,5 +1,6 @@
 import pygame
 
+# 좌측 위에 표시되는 UI
 class HeroUI : 
     def __init__(self, imgPro) :
         self.profile = pygame.Surface((64, 32), pygame.SRCALPHA)

@@ -16,16 +16,24 @@ class MapMng :
         self.offset.y *= self.tile.getSizeWithoutPadding()
         self.center = Vector2(int(self.size.x / 2), int(self.size.y / 2))
 
+        # 목적이 위치
         self.mosueGridPos = Vector2(0, 0)
         self.pathProvider = PathProvider()
+
+        # 계속 호출하는 것보다 미리 계산하고 사용
         self.SQRT3 = math.sqrt(3)
         self.map = []
         for y in range(mapSizeY) :
             self.map.append([])
             for x in range(mapSizeX) :
+                # 맵을 빈 공간 없이 그리기 위해 렌더링하는 위치를 조정
                 offsetY = 0 if x % 2 == 0 else self.tile.getShift()
-                self.map[y].append(Tile(self.tile.tileType["Block"], ((x * (self.tile.scale - self.tile.getShift() / 2) - self.offset.x), ((y * (self.tile.getSizeWithoutPadding()) + offsetY) - self.offset.y)), (x, y), self.tile.scale))
+                self.map[y].append(Tile(self.tile.tileType["Block"], \
+                                        ((x * (self.tile.scale - self.tile.getShift() / 2) - self.offset.x), \
+                                        ((y * (self.tile.getSizeWithoutPadding()) + offsetY) - self.offset.y)), \
+                                        (x, y), self.tile.scale))
 
+    # 특정 인덱스를 인덱스가 아닌 화면 위치 값으로 변환
     def toWorldPosition(self, pos) :
         return self.map[int(pos.y)][int(pos.x)].center
        
@@ -67,16 +75,15 @@ class MapMng :
 
         return Vector2(xIndex, yIndex)
     
-    # 특정 그리드 위치 주변에 특정 타입의 타일이 있는지 확인하는 메서드
+    # 특정 그리드 위치 주변에 특정 타입의 타일이 있는지 확인
     def isTileTypeNearby(self, center, target, radius=1):
         x, y = int(center.x), int(center.y)
         
         target_id = self.tile.tileType.get(target) 
         if target_id is None:
-            return False # 유효하지 않은 타일 타입 이름이면 False 반환
+            return False # 유효하지 않은 타일 타입이면 False 반환
 
         # 육각형 그리드 주변 탐색 로직
-        # radius에 따라 확장 가능
         for i in range(-radius, radius + 1):
             for j in range(-radius, radius + 1):
                 # 육각형 그리드 특성상 특정 좌표는 스킵
@@ -87,7 +94,7 @@ class MapMng :
                     if (j == -1 and i == -1) or (j == 1 and i == -1):
                         continue
                 
-                # 중앙 자신은 제외 (선택 사항)
+                # 중앙 제외
                 if i == 0 and j == 0:
                     continue
 
@@ -97,9 +104,9 @@ class MapMng :
                 # 맵 범위 내에 있는지 확인
                 if 0 <= neighbor_x < self.size.x and 0 <= neighbor_y < self.size.y:
                     neighbor_pos = Vector2(neighbor_x, neighbor_y)
-                    # 해당 타일의 현재 맵 인덱스가 목표 타일 ID와 같은지 확인
+                    # 해당 타일의 현재 맵 인덱스가 목표 타일과 같은지 확인
                     if self.getMapIndex(neighbor_pos) == target_id:
-                        return True # 찾으면 바로 True 반환
+                        return True # 찾으면 True 반환
                         
         return False # 주변에 해당 타일이 없으면 False 반환
 
