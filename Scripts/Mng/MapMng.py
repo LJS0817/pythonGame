@@ -67,14 +67,14 @@ class MapMng :
 
         return Vector2(xIndex, yIndex)
     
-    # 마우스 클릭한 위치가 같은 위치인지 판다ㅏㄴ
+    # 마우스 클릭한 위치가 같은 위치인지 판단
     def isSameTarget(self, target) :
         return self.mosueGridPos == self.getHex(target.x, target.y)
     
     # 경로 탐색 함수
     def findPath(self, playerPos, targetPos, path) :
         # 마우스 위치나 특정 오브젝트 위치를 맵 인덱스 형태로 변경
-        # 사각형이 아닌 육각형으로 맵을 구성하였기에 판정 또한 육각형을 기준으로 해야함함
+        # 사각형이 아닌 육각형으로 맵을 구성하였기에 판정 또한 육각형을 기준으로 해야함
         self.mosueGridPos = self.getHex(targetPos.x, targetPos.y)
 
         # if self.getMapIndex(self.mosueGridPos) == 0 :
@@ -118,7 +118,7 @@ class MapMng :
             t = 1
         self.map[int(pos.y)][int(pos.x)].setTileType(self.tile.tileType[t] if type(t) == str else t, lambda: self.removeUpdateList(pos))
 
-    # 맵이 바뀌기 전의 상태를 저장하고 있다가 바뀔 때 이전 상태로 되돌리기 위한 함수수
+    # 맵이 바뀌기 전의 상태를 저장하고 있다가 바뀔 때 이전 상태로 되돌리기 위한 함수
     def getMapChangeIndex(self, pos) :
         if pos in self.mapChanged :
             idx = self.mapChanged[pos]
