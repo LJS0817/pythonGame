@@ -5,6 +5,7 @@ from pygame.math import Vector2
 from Unit.Inventory.Inventory import Inventory
 from Unit.UI.FadeOutEffect import FadeEffect
 import pygame
+import random
 
 class Hero(Unit):
     def __init__(self, center, imgPro, itemPro, uiMng) :
@@ -27,23 +28,31 @@ class Hero(Unit):
         self.AP = self.ApLimit + 1
         self.ap_effects = []
 
+        self.debugItemIndex = 1
+        
+
     def Update(self, input, mapMng, dt):
-        if input.isKeyDown(pygame.K_q) :
-            self.changeAP(self.ApLimit)
-        if input.isKeyDown(pygame.K_a) :
-            self.bag.addItem("1", self.itemProvider.getItem("1"), 1)
-        if input.isKeyDown(pygame.K_s) :
-            self.bag.addItem("2", self.itemProvider.getItem("2"), 1)
-        if input.isKeyDown(pygame.K_d) :
-            self.bag.addItem("3", self.itemProvider.getItem("3"), 1)
-        if input.isKeyDown(pygame.K_f) :
-            self.bag.addItem("4", self.itemProvider.getItem("4"), 1)
+        # 테스트용 키
+        self.forText(input, mapMng)
+
         if input.isKeyDown(pygame.K_i) :
             self.showInventory()
         self.Move(input, mapMng, dt)
-        self.ap_effects = [fx for fx in self.ap_effects if fx.update(dt)]
-        
         self.bag.update(input)
+        self.ap_effects = [fx for fx in self.ap_effects if fx.update(dt)]
+
+    # 테스트 시 사용하는 키 모음
+    def forText(self, input, mapMng) :
+        if input.isKeyDown(pygame.K_q) :
+            self.changeAP(self.ApLimit)
+        if input.isKeyDown(pygame.K_s) :
+            rand = random.randrange(1, 9)
+            self.bag.addItem(f"{rand}", self.itemProvider.getItem(f"{rand}"), 1)
+        if input.isKeyDown(pygame.K_a) :
+            self.bag.addItem(f"{self.debugItemIndex}", self.itemProvider.getItem(f"{self.debugItemIndex}"), 1)
+            self.debugItemIndex += 1
+            if self.debugItemIndex > 8 :
+                self.debugItemIndex = 1
 
     def FollowPath(self, dt) :
         if self.path == None : return
@@ -67,6 +76,8 @@ class Hero(Unit):
         self.AP += cnt
         if self.AP > self.ApLimit :
             self.AP = self.ApLimit
+        elif self.AP < 0 : 
+            self.AP = 0
         self.UI.setAp(self.AP / self.ApLimit if self.AP > 0 else 0)
 
         text = self.font.getFont(24).render(f"{cnt} AP", True, (255, 255, 255))
@@ -74,6 +85,9 @@ class Hero(Unit):
 
     def Move(self, input, mapMng, dt) :
         if not self.bag.isShowing() :
+            if input.isKeyDown(pygame.K_z):
+                if not mapMng.isSameTarget(input.getMousePosition()) :
+                    mapMng.setMapIndex(mapMng.getHex(input.getMousePosition().x, input.getMousePosition().y), 2)
             if input.isMouseDown(1):
                 if not mapMng.isSameTarget(input.getMousePosition()) :
                     mapMng.setMapIndex(mapMng.getHex(input.getMousePosition().x, input.getMousePosition().y), -1)
@@ -81,13 +95,17 @@ class Hero(Unit):
             if input.isMouseDown(0):
                 if self.eventProvider.isShowing() :
                     self.eventProvider.handle_click(pygame.mouse.get_pos(), self)
-                elif self.path == None and mapMng.getHex(input.getMousePosition().x, input.getMousePosition().y) == self.position : 
-                    self.eventProvider.generateEvents(input.camera.getPosition(), self.bag)
-                elif not mapMng.isSameTarget(input.getMousePosition()) and self.AP > 0 :
+                elif (self.path == None or len(self.path) == 1) and mapMng.isSameTarget(input.getMousePosition()) : 
+                    # Hero의 현재 위치 주변에 강 타일이 있는지 확인
+                    is_near_river = mapMng.isTileTypeNearby(self.position, "River", radius=1) # radius 조절 가능
+                    self.eventProvider.generateEvents(input.camera.getPosition(), self.bag, is_near_river)
+                elif self.path == None and not mapMng.isSameTarget(input.getMousePosition()) and self.AP > 0 :
                     self.setTileNearestTile(mapMng)
                     self.path = mapMng.findPath(self.position, input.getMousePosition(), self.path)
                     self.targetIndex = 0
-
+                if self.path != None and mapMng.getMapIndex(self.position) != 4:
+                    mapMng.setMapIndex(self.position, 4)
+            
             self.FollowPath(dt)
 
         if(self.prevPos == None or self.prevPos != self.position) :
@@ -99,6 +117,7 @@ class Hero(Unit):
             if self.AP <= 0 :
                 self.AP = 0
                 self.setTileNearestTile(mapMng)
+                mapMng.setTargetOutAp(self.position)
             self.prevPos = Vector2.copy(self.position)
 
         input.camera.smoothMove(self.worldPosition)
@@ -110,7 +129,7 @@ class Hero(Unit):
                 idx = mapMng.getMapChangeIndex(pos)
                 pos = Vector2(pos[0], pos[1])
                 print(idx, pos)
-                if idx == 0 and mapMng.getMapIndex(pos) == 2 :
+                if idx == 0 and mapMng.getMapIndex(pos) == 3:
                     mapMng.setMapIndex(pos, 1)
             self.clearPath(mapMng)
 

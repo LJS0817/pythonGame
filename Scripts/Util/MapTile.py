@@ -4,6 +4,7 @@ class MapTile :
     def __init__(self, imgPro) :
         self.imgs = [imgPro.getAnimatedImage("Map", "Block", 6), 
                      imgPro.getAnimatedImage("Map", "Ground", 6), 
+                     imgPro.getAnimatedImage("Map", "River", 6), 
                      imgPro.getAnimatedImage("Map", "Path", 6),
                      imgPro.getAnimatedImage("Map", "Hero", 6),]
         self.scale = 32
@@ -12,8 +13,9 @@ class MapTile :
         self.tileType = {
             "Block" : 0,
             "Normal" : 1,
-            "Path" : 2,
-            "Hero" : 3,
+            "River" : 2,
+            "Path" : 3,
+            "Hero" : 4,
         }
 
     def resize(self, scale) :

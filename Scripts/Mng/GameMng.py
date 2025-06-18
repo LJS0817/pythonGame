@@ -18,7 +18,6 @@ class GameMng(Scene):
         self.hero.Update(input, self.map, dt)
 
     def Draw(self, camera, screen):
-        # fill the screen with a color to wipe away anything from last frame
         screen.fill((47, 65, 88))
         self.map.Draw(camera, screen)
         self.hero.Draw(camera, screen)

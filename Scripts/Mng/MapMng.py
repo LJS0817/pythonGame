@@ -37,7 +37,7 @@ class MapMng :
 
         return (dy <= self.SQRT3 / 2) and (self.SQRT3 * dx + dy <= self.SQRT3)
 
-    # 마우스 좌료를 인덱스 형태로 변환한 후의 보정
+    # 마우스 좌표를 인덱스 형태로 변환한 후의 보정
     def getHex(self, x, y):
         tileWidth = self.tile.scale
         tileHeight = self.tile.getSizeWithoutPadding()
@@ -67,9 +67,50 @@ class MapMng :
 
         return Vector2(xIndex, yIndex)
     
+    # 특정 그리드 위치 주변에 특정 타입의 타일이 있는지 확인하는 메서드
+    def isTileTypeNearby(self, center, target, radius=1):
+        x, y = int(center.x), int(center.y)
+        
+        target_id = self.tile.tileType.get(target) 
+        if target_id is None:
+            return False # 유효하지 않은 타일 타입 이름이면 False 반환
+
+        # 육각형 그리드 주변 탐색 로직
+        # radius에 따라 확장 가능
+        for i in range(-radius, radius + 1):
+            for j in range(-radius, radius + 1):
+                # 육각형 그리드 특성상 특정 좌표는 스킵
+                if x % 2 == 0: # 짝수열
+                    if (j == -1 and i == 1) or (j == 1 and i == 1):
+                        continue
+                else: # 홀수열
+                    if (j == -1 and i == -1) or (j == 1 and i == -1):
+                        continue
+                
+                # 중앙 자신은 제외 (선택 사항)
+                if i == 0 and j == 0:
+                    continue
+
+                neighbor_x = x + j
+                neighbor_y = y + i
+                
+                # 맵 범위 내에 있는지 확인
+                if 0 <= neighbor_x < self.size.x and 0 <= neighbor_y < self.size.y:
+                    neighbor_pos = Vector2(neighbor_x, neighbor_y)
+                    # 해당 타일의 현재 맵 인덱스가 목표 타일 ID와 같은지 확인
+                    if self.getMapIndex(neighbor_pos) == target_id:
+                        return True # 찾으면 바로 True 반환
+                        
+        return False # 주변에 해당 타일이 없으면 False 반환
+
+    
     # 마우스 클릭한 위치가 같은 위치인지 판단
     def isSameTarget(self, target) :
         return self.mosueGridPos == self.getHex(target.x, target.y)
+    
+    # AP가 0이 되었을 시 현재 캐릭터 위치를 목적지로 설정
+    def setTargetOutAp(self, target) :
+        self.mosueGridPos = target
     
     # 경로 탐색 함수
     def findPath(self, playerPos, targetPos, path) :
@@ -80,7 +121,7 @@ class MapMng :
         # if self.getMapIndex(self.mosueGridPos) == 0 :
         #     self.setMapIndexWithSplash(self.mosueGridPos, "Normal")
 
-        # 변환한 인덱스를 가지고 A* 알고리즘 사용용
+        # 변환한 인덱스를 가지고 A* 알고리즘 사용
         path = self.pathProvider.a_star(self.map, playerPos, self.mosueGridPos)
         print(path)
         # 경로를 다른 블록으로 변경하여 경로를 시각적으로 표시
@@ -112,9 +153,9 @@ class MapMng :
     def setMapIndex(self, pos, t) :
         self.mapSwitched[(pos.x, pos.y)] = self.map[int(pos.y)][int(pos.x)]
         # print(self.mapSwitched)
-        if self.getMapIndex(pos) < 2 :
-            self.mapChanged[(pos.x, pos.y)] = self.map[int(pos.y)][int(pos.x)].getTileType()
-        if self.getMapIndex(pos) == 3 and t == 0 :
+        if self.getMapIndex(pos) < 3 :
+            self.mapChanged[(pos.x, pos.y)] = self.getMapIndex(pos)
+        if self.getMapIndex(pos) == 4 and t == 0 :
             t = 1
         self.map[int(pos.y)][int(pos.x)].setTileType(self.tile.tileType[t] if type(t) == str else t, lambda: self.removeUpdateList(pos))
 

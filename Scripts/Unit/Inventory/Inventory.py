@@ -46,29 +46,39 @@ class Inventory :
     def isShowing(self) :
         return self.showItem
 
+    # 아이템 추가 및 사용 시에 호출
     def addItem(self, id, item, cnt) :
         if self.hasItem(id) :
             self.items[id].addCount(cnt)
+            self.checkEmpty(id)
         else :
             self.sorted_item_keys.append(id)
             self.items[id] = item
             self.addItem(id, item, cnt)
 
+    # 아이템 제거
     def removeItem(self, id) :
         if self.hasItem(id) :
             self.items[id].remove()
             del self.items[id]
             self.sorted_item_keys = list(self.items.keys())
 
+    # 아이템 사용
     def useItem(self, id, cnt) :
         if self.hasItem(id) :
             self.items[id].use(cnt, self.hero)
-            if self.items[id].isEmpty() :
-                self.removeItem(id)
+            self.checkEmpty(id)
+
+    def checkEmpty(self, id) :
+        if self.items[id].isEmpty() :
+            self.removeItem(id)
 
     def hasItem(self, id) :
         return id in self.items
-
+    
+    def hasEnoughItem(self, id, cnt) :
+        return self.hasItem(id) and self.items[id].enoughCount(cnt)
+    
     def quicksort(self, arr):
         if len(arr) <= 1:
             return arr
@@ -134,17 +144,12 @@ class Inventory :
         if self.selectedMenu != None :
             if self.selectedMenu == "Drop" :
                 self.removeItem(self.selectedItemKey)
-                self.selectedItemKey = None
-                self.selectedItem = None
-                self.selectedMenu = None
-                self.itemMenuFixedPos = None
-
             elif self.selectedMenu == "Use" :
                 self.useItem(self.selectedItemKey, 1)
-                self.selectedItemKey = None
-                self.selectedItem = None
-                self.selectedMenu = None
-                self.itemMenuFixedPos = None
+            self.selectedItemKey = None
+            self.selectedItem = None
+            self.selectedMenu = None
+            self.itemMenuFixedPos = None
 
     def update(self, input) :
         if self.showItem :
@@ -168,13 +173,15 @@ class Inventory :
             if self.selectedItem != None and self.itemMenuFixedPos == None :
                 self.selectedItem = None
 
+            for i in range(len(self.buttons)) :
+                self.buttons[i].draw(screen, Vector2(self.position.x + camera.getCenter().x + self.img.get_rect().right, self.position.y + camera.getCenter().y + 100 + 80 * i))
+
             for i in range(len(self.getKeys())) :
-                self.items[self.getKeys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(48 + 104* i, 136))
+                self.items[self.getKeys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(48 + 104 * (i % 5), 136 + (128 * int(i / 5))))
                 if self.itemMenuFixedPos == None and self.items[self.getKeys()[i]].rect.collidepoint(pygame.mouse.get_pos()) :
                     self.selectedItemKey = self.getKeys()[i]
                     self.selectedItem = self.items[self.selectedItemKey]
                 elif i == len(self.getKeys()) - 1 and self.selectedItem == None and self.itemMenuFixedPos != None :
                     self.itemMenuFixedPos = None
+
             self.showItemMenu(screen)
-            for i in range(len(self.buttons)) :
-                self.buttons[i].draw(screen, Vector2(self.position.x + camera.getCenter().x + self.img.get_rect().right, self.position.y + camera.getCenter().y + 100 + 80 * i))

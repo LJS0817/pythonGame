@@ -20,11 +20,27 @@ class EventProvider:
 
         self.effects = [
             {
-                "desc": "You found a Log (+1 Item)",
+                "desc": "You found a Log (+1)",
                 "type": "Item",
                 "value": {
                     "id": "1",
                     "item": itemPro.getItem("1")
+                }
+            },
+            {
+                "desc": "You found a Rope (+1)",
+                "type": "Item",
+                "value": {
+                    "id": "3",
+                    "item": itemPro.getItem("3")
+                }
+            },
+            {
+                "desc": "You found a Stone (+1)",
+                "type": "Item",
+                "value": {
+                    "id": "2",
+                    "item": itemPro.getItem("2")
                 }
             },
             {
@@ -43,7 +59,7 @@ class EventProvider:
     def isShowing(self) :
         return self.enable
 
-    def generateEvents(self, currentPos, inven):
+    def generateEvents(self, currentPos, inven, isNearRiver):
         self.enable = True
         self.last_generated_pos = currentPos
         self.events.clear()
@@ -59,7 +75,38 @@ class EventProvider:
                     "use" : ["1", "2", "3"]
                 }
             })
+            
+        if inven.hasEnoughItem("1", 2) and inven.hasItem("3"):
+            custom_effects.append({
+                "desc": "Create Fishing Rod",
+                "type": "Craft",
+                "value": {
+                    "id": "6",
+                    "item": self.itemPro.getItem("6"),
+                    "use" : ["1", "1", "3"]
+                }
+            })
 
+        if inven.hasItem("6") and isNearRiver:
+            custom_effects.append({
+                "desc": "Go Fishing",
+                "type": "Item",
+                "value": {
+                    "id": "7",
+                    "item": self.itemPro.getItem("7")
+                }
+            })
+
+        if inven.hasItem("7") :
+            custom_effects.append({
+                "desc": "Cook Fish",
+                "type": "Craft",
+                "value": {
+                    "id": "8",
+                    "item": self.itemPro.getItem("8"),
+                    "use" : ["7"]
+                }
+            })
         for _ in range(self.eventLimit):
             effect = random.choice(custom_effects)
             event = Event(effect["desc"], self.font, effect["type"], effect["value"])

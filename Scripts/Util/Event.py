@@ -16,5 +16,5 @@ class Event:
             hero.bag.addItem(self.value["id"], self.value["item"], 1)
         elif self.effect_type == "Craft":
             for id in self.value["use"]:
-                hero.bag.useItem(id, 1)
+                hero.bag.addItem(id, None, -1)
             hero.bag.addItem(self.value["id"], self.value["item"], 1)
