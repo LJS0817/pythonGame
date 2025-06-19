@@ -18,6 +18,7 @@ class Button :
         self.rect = self.img.get_rect(topleft=pos)
         screen.blit(self.img, self.rect)
 
+    # 버튼을 누르면 콜백함수 호출
     def activate(self) :
         self.action()
             

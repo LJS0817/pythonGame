@@ -1,3 +1,5 @@
+# 화면 정보를 가지고 있는 상위 객체 추상화
+# 상속하여 사용
 class Scene:
     def __init__(self, name, id=-1):
         self.name = name

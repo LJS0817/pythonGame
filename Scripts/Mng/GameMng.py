@@ -31,4 +31,5 @@ class GameMng(Scene):
 
     # 씬 변경 시에 호출
     def dispose(self) :
-        pass
+        self.map.reset()
+        self.hero.reset(self.map.center)

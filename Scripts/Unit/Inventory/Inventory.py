@@ -10,22 +10,8 @@ class Inventory :
 
         self.hero = hero
 
-        # 인벤토리 표시 여부
-        self.showItem = False
-        # 인벤토리에 저장된 아이템
-        self.items = { }
-
         self.font = font
         self.itemTitleFont = font.getFont(20)
-
-        # 선택한 아이템
-        self.selectedItem = None
-        # 아이템 위에서 마우스 클릭 시 서브 메뉴 고정 위치
-        self.itemMenuFixedPos = None
-        # 아이템 종류
-        self.selectedMenu = None
-        # 아이템 검색을 위한 키
-        self.selectedItemKey = None
 
         self.background = pygame.Surface((1280, 600), pygame.SRCALPHA)
         self.background.fill((0, 0, 0, 128))
@@ -45,6 +31,23 @@ class Inventory :
         ]
         self.position = Vector2(-self.img.get_width() / 2, -self.img.get_height() / 2)
         
+        self.reset()
+    
+    def reset(self) :
+        # 인벤토리 표시 여부
+        self.showItem = False
+        # 인벤토리에 저장된 아이템
+        self.items = { }
+
+        # 선택한 아이템
+        self.selectedItem = None
+        # 아이템 위에서 마우스 클릭 시 서브 메뉴 고정 위치
+        self.itemMenuFixedPos = None
+        # 아이템 종류
+        self.selectedMenu = None
+        # 아이템 검색을 위한 키
+        self.selectedItemKey = None
+
         # 정렬된 키를 저장할 리스트
         self.sorted_item_keys = []
         # 아이템 목록 변경 여부 플래그
@@ -122,7 +125,7 @@ class Inventory :
             self.sort_trigger = False
         return self.sorted_item_keys
 
-    # 서브 메뉴 출력
+    # 서브 메뉴 위치 계산 및 출력
     def showItemMenu(self, screen) :
         if self.selectedItem != None :
             box = self.itemTitleFont.render(str(self.selectedItem.name), True, (212, 185, 165))
@@ -158,6 +161,7 @@ class Inventory :
             if self.selectedMenu != None :
                 self.selectedMenu = None
             for rect, label in zip(menu_rects, menu_items):
+                # 마우스 충돌 판정
                 if rect.collidepoint(pygame.mouse.get_pos()):
                     self.selectedMenu = label
    
@@ -204,6 +208,7 @@ class Inventory :
 
             for i in range(len(self.getKeys())) :
                 self.items[self.getKeys()[i]].draw(screen, self.position + camera.getCenter() + Vector2(48 + 104 * (i % self.ROW_COUNT), 136 + (128 * int(i / self.ROW_COUNT))))
+                # 마우스 충돌 판정
                 if self.itemMenuFixedPos == None and self.items[self.getKeys()[i]].rect.collidepoint(pygame.mouse.get_pos()) :
                     self.selectedItemKey = self.getKeys()[i]
                     self.selectedItem = self.items[self.selectedItemKey]

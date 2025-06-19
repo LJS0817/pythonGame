@@ -32,6 +32,10 @@ class ItemProvider :
         }
         self.itemCount = len(self.itemList)
     
+    def reset(self) :
+        for k in self.itemList :
+            self.itemList[k].remove()
+    
     # 아이템 개수
     def getItemCount(self) :
         return self.itemCount

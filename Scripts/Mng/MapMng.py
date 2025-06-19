@@ -9,23 +9,29 @@ class MapMng :
         self.size = Vector2(mapSizeX, mapSizeY)
         self.tile = MapTile(imgProvider)
         self.tile.resize(96)
-        self.mapChanged = {}
-        self.mapSwitched = {}
         self.offset = (self.size * 0.5)
         self.offset.x *= (self.tile.scale - self.tile.getShift() / 2)
         self.offset.y *= self.tile.getSizeWithoutPadding()
         self.center = Vector2(int(self.size.x / 2), int(self.size.y / 2))
 
-        # 목적이 위치
-        self.mosueGridPos = Vector2(0, 0)
         self.pathProvider = PathProvider()
 
         # 계속 호출하는 것보다 미리 계산하고 사용
         self.SQRT3 = math.sqrt(3)
+        self.reset()
+                
+    def reset(self) :
+        # 목적지 위치
+        self.mosueGridPos = Vector2(0, 0)
+
+        # 맵이 바뀌면 저장하여 바뀐 타일만 연산
+        self.mapChanged = {}
+        self.mapSwitched = {}
+        
         self.map = []
-        for y in range(mapSizeY) :
+        for y in range(int(self.size.y)) :
             self.map.append([])
-            for x in range(mapSizeX) :
+            for x in range(int(self.size.x)) :
                 # 맵을 빈 공간 없이 그리기 위해 렌더링하는 위치를 조정
                 offsetY = 0 if x % 2 == 0 else self.tile.getShift()
                 self.map[y].append(Tile(self.tile.tileType["Block"], \

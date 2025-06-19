@@ -1,7 +1,7 @@
-  # Example file showing a circle moving on screen
 import pygame
 
 from Mng.GameMng import GameMng
+from Mng.MenuMng import MenuMng
 from Mng.InputMng import InputMng
 
 from Mng.Camera import Camera
@@ -31,7 +31,12 @@ imageProvider.loadImage()
 # 상태기기 초기화
 # 화면의 상태를 관리
 # 메뉴창, 인게임창, 결과창 등
-sceneManager = SceneState([GameMng(imageProvider=imageProvider)])
+# 스페이스바로 화면 전환 가능
+# 메뉴에서 인게임으로 전환하는 예시
+# sceneManager = SceneState([MenuMng(imageProvider=imageProvider), GameMng(imageProvider=imageProvider)])
+# 단일
+# sceneManager = SceneState([GameMng(imageProvider=imageProvider)])
+sceneManager = SceneState([MenuMng(imageProvider=imageProvider), GameMng(imageProvider=imageProvider)])
 
 while running:
     # 이벤트 감지
@@ -42,6 +47,9 @@ while running:
         
     input.Update()
     
+    # 씬 변경 테스트를 위해서 호출
+    sceneManager.sceneChanger(input)
+
     sceneManager.getCurrentScene().Update(input, camera, dt)
     sceneManager.getCurrentScene().Draw(camera, screen)
 

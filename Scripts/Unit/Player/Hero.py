@@ -10,27 +10,37 @@ import random
 class Hero(Unit):
     def __init__(self, center, imgPro, itemPro, uiMng) :
         super().__init__()
+        # 이동 속도
+        self.moveLimitTime = 0.4
+        self.ApLimit = 10
+
+        self.font = uiMng
+        self.bag = Inventory(imgPro, self.font, self)
+        self.UI = HeroUI(imgPro)
+
+        self.itemProvider = itemPro
+        self.eventProvider = EventProvider(uiMng, imgPro, itemPro)
+
+        self.reset(center)
+
+    # 씬 초기화용
+    def reset(self, center) :
         self.position = center
         self.worldPosition = None
         self.prevPos = None
         self.path = None
         self.targetIndex = 0
-        self.itemProvider = itemPro
-        self.eventProvider = EventProvider(uiMng, imgPro, itemPro)
-
+        
         # 이동 속도
-        self.moveTime = 0
-        self.moveLimitTime = 0.4
+        self.moveTime = self.moveLimitTime
 
-        self.font = uiMng
-        self.bag = Inventory(imgPro, self.font, self)
-        self.UI = HeroUI(imgPro)
-        self.ApLimit = 4
         self.AP = self.ApLimit + 1
         self.ap_effects = []
 
         self.debugItemIndex = 1
-        
+
+        self.bag.reset()
+        self.itemProvider.reset()
 
     def Update(self, input, mapMng, dt):
         # 테스트용 키
