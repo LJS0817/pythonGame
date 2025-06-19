@@ -47,6 +47,14 @@ class EventProvider:
                 }
             },
             {
+                "desc": "You found a Mushroom (+1)",
+                "type": "Item",
+                "value": {
+                    "id": "4",
+                    "item": itemPro.getItem("4")
+                }
+            },
+            {
                 "desc": "You gained +1 AP!",
                 "type": "AP",
                 "value": 1
