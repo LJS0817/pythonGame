@@ -9,6 +9,7 @@ class MenuMng(Scene):
         if(imageProvider != None) :
             self.ui = UIMng(imageProvider)
             self.itemProvider = ItemProvider(imageProvider, self.ui)
+
     # 업데이트
     def Update(self, input, camera, dt):
         pass

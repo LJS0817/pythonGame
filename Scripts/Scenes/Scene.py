@@ -7,6 +7,9 @@ class Scene:
     
     def setId(self, id) :
         self.id = id
+
+    def getName(self) :
+        return self.name
     
     def Update(self, camera, dt):
         pass

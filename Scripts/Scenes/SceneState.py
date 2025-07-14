@@ -28,6 +28,7 @@ class SceneState:
         if idx >= len(self.list) :
             idx = 0
         self.curIndex = idx
+        print(f"changeScene  {self.getCurrentScene().getName()}")
         self.getCurrentScene().start()
 
     # 현재 화면 상태 반환
